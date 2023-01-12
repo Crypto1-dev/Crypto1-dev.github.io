@@ -215,6 +215,14 @@
                                     </a>
                                 </div>
                             </div>
+                                <p>
+                                <a onclick="eng()">
+                                    🇬🇧 English site
+                                </a>&nbsp;/&nbsp;
+                                <a onclick="pl()">
+                                    🇵🇱 Polska strona
+                                </a>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -712,6 +720,17 @@
     </section>
 </body>
 <script>
+
+function eng() {
+    setCookie("lang", "1", 1);
+    document.location.href = 'http://piotrowsky.dev';
+}
+
+function pl() {
+    setCookie("lang", "1", 1);
+    document.location.href = 'http://piotrowsky.dev/pl';
+}
+
 const day = 24 * 60 * 60 * 1000;
 const age = document.getElementById("age");
 
@@ -735,9 +754,30 @@ setInterval(function() {
     update_age();
 }, 100);
 
+function setCookie(name, value, days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+}
+
+function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+}
+
 var language = navigator.language || navigator.browserLanguage; //for IE
 
-if (language.indexOf('pl') > -1) {
+if (language.indexOf('pl') > -1 && !getcookie("lang")) {
  document.location.href = 'http://piotrowsky.dev/pl.html';
 }
 
