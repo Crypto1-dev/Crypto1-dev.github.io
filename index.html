@@ -737,7 +737,7 @@ const age = document.getElementById("age");
 round_to = function(precision, value) {
     value = parseFloat(value);
     power_of_ten = 10 ** precision;
-    return Math.round(value * power_of_ten) / power_of_ten;
+    return ((value * power_of_ten) / power_of_ten).toFixed(precision);
 }
 
 day_diff = function(d1, d2) {
