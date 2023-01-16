@@ -329,7 +329,9 @@
                                                 </div>
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
-                                                        AVT5500 assembly + my case
+                                                        <a href="https://www.printables.com/pl/model/345804-avt5500-battery-capacity-tester-case">
+                                                            AVT5500 assembly + my case
+                                                        </a>
                                                         <p class="heading mt-3 has-text-grey">
                                                             2019, December 2022
                                                         </p>
@@ -363,7 +365,9 @@
                                                 </div>
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
-                                                        AVT2425 assembly + my case
+                                                        <a href="https://www.printables.com/pl/model/334645-avt2425-capacitance-meter-enclosure">
+                                                            AVT2425 assembly + my case
+                                                        </a>
                                                         <p class="heading mt-3 has-text-grey">
                                                             December 2022
                                                         </p>
@@ -516,7 +520,9 @@
                                                 </div>
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
-                                                        ESP32 portable smart thing
+                                                        <a href="https://www.printables.com/pl/model/266182-esp32-128x32-oled-and-tp4056-case">
+                                                            ESP32 portable smart thing
+                                                        </a>
                                                         <p class="heading mt-3 has-text-grey">
                                                             August 2022
                                                         </p>
@@ -584,7 +590,9 @@
                                                 </div>
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
-                                                        Simple weather station
+                                                        <a href="https://www.printables.com/pl/model/188731-nodemcu-dht11-128x32-oled-case">
+                                                            Simple weather station
+                                                        </a>
                                                         <p class="heading mt-3 has-text-grey">
                                                             May 2022
                                                         </p>
@@ -860,7 +868,6 @@
     </section>
 </body>
 <script>
-
 function eng() {
     setCookie("lang", "1", 1);
     document.location.href = 'http://piotrowsky.dev';
@@ -898,19 +905,19 @@ function setCookie(name, value, days) {
     var expires = "";
     if (days) {
         var date = new Date();
-        date.setTime(date.getTime() + (days*24*60*60*1000));
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
         expires = "; expires=" + date.toUTCString();
     }
-    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
 }
 
 function getCookie(name) {
     var nameEQ = name + "=";
     var ca = document.cookie.split(';');
-    for(var i=0;i < ca.length;i++) {
+    for (var i = 0; i < ca.length; i++) {
         var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1,c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
     }
     return null;
 }
@@ -918,10 +925,8 @@ function getCookie(name) {
 var language = navigator.language || navigator.browserLanguage; //for IE
 
 if (language.indexOf('pl') > -1 && !getCookie("lang")) {
- document.location.href = 'http://piotrowsky.dev/pl.html';
+    document.location.href = 'http://piotrowsky.dev/pl.html';
 }
-
-
 </script>
 
 </html>
