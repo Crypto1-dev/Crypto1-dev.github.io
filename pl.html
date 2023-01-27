@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="pl">
 
 <head>
     <meta charset="utf-8">
@@ -27,8 +27,8 @@
     <meta property="og:image" content="https://revoxhere.github.io/assets/banner.png">
     <meta property="og:image:url" content="https://revoxhere.github.io/assets/banner.png">
     <meta name="twitter:card" content="summary_large_image">
-    <link rel="stylesheet" href="https://wallet.duinocoin.com/css/bulma-prefers-dark.min.css" type="text/css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://wallet.duinocoin.com/css/bulma-prefers-dark.min.css" type="text/css">
     <script src="https://wallet.duinocoin.com/js/fontawesome.js"></script>
     <style>
     .link {
@@ -99,17 +99,41 @@
         .heading {
             color: #1e272e;
         }
+
+        #projektysmall:after {
+            content: "";
+            position: absolute;
+            z-index: 1;
+            bottom: 0;
+            left: 0;
+            pointer-events: none;
+            background-image: linear-gradient(to bottom, #FBF7F400, #FBF7F4EE);
+            width: 100%;
+            height: 14em;
+        }
     }
 
     @media (prefers-color-scheme: dark) {
         .heading {
             color: #fbfbfb;
         }
+
+        #projektysmall:after {
+            content: "";
+            position: absolute;
+            z-index: 1;
+            bottom: 0;
+            left: 0;
+            pointer-events: none;
+            background-image: linear-gradient(to bottom, #17181C00, #17181CEE);
+            width: 100%;
+            height: 14em;
+        }
     }
 
     @media only screen and (min-width: 768px) {
         html {
-            zoom: 1.35;
+            zoom: 1.1;
         }
 
         .avatar {
@@ -119,6 +143,16 @@
 
     .heading {
         margin-bottom: 0.5em !important;
+    }
+
+    #projektysmall {
+        max-height: 876px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .removeBar:after {
+        content: none !important;
     }
 
     @keyframes popin {
@@ -246,8 +280,8 @@
                                 <small class="subtitle is-size-7 has-text-danger has-text-weight-normal">*lista niekompletna, w trakcie tworzenia...</small>
                             </p>
                             <div class="columns is-multiline">
-                                <div class="column is-full">
-                                    <div class="columns is-multiline is-size-6 is-mobile">
+                                <div class="column is-full" id="projektysmall">
+                                    <div class="columns is-multiline is-size-6">
                                         <div class='column is-half'>
                                             <div class="card">
                                                 <div class="card-image">
@@ -259,6 +293,7 @@
                                                     <div class="content">
                                                         <a href="https://www.printables.com/pl/model/381429-vu-meter-with-led-replicas-of-in-9-nixie-tubes">
                                                             VU meter na moich "replikach" lamp IN-9
+                                                            <i class="fa fa-link"></i>
                                                         </a>
                                                         <p class="heading mt-3 has-text-grey">
                                                             Styczeń 2023
@@ -278,6 +313,7 @@
                                                     <div class="content">
                                                         <a href="https://github.com/revoxhere/Mini-Zegar-VFD">
                                                             Mini zegar VFD na lampie IV-21
+                                                            <i class="fa fa-link"></i>
                                                         </a>
                                                         <p class="heading mt-3 has-text-grey">
                                                             Styczeń 2023
@@ -331,6 +367,7 @@
                                                     <div class="content">
                                                         <a href="assets/przetwornica-555.pdf">
                                                             Zasilacz impulsowy na NE555
+                                                            <i class="fa fa-link"></i>
                                                         </a>
                                                         <p class="heading mt-3 has-text-grey">
                                                             Grudzień 2022
@@ -350,6 +387,7 @@
                                                     <div class="content">
                                                         <a href="https://www.printables.com/pl/model/345804-avt5500-battery-capacity-tester-case">
                                                             Miernik pojemności akumulatorów AVT5500 + moja obudowa
+                                                            <i class="fa fa-link"></i>
                                                         </a>
                                                         <p class="heading mt-3 has-text-grey">
                                                             2019, Grudzień 2022
@@ -386,6 +424,7 @@
                                                     <div class="content">
                                                         <a href="https://www.printables.com/pl/model/334645-avt2425-capacitance-meter-enclosure">
                                                             Miernik pojemności kondensatorów AVT2425 + moja obudowa
+                                                            <i class="fa fa-link"></i>
                                                         </a>
                                                         <p class="heading mt-3 has-text-grey">
                                                             Grudzień 2022
@@ -541,6 +580,7 @@
                                                     <div class="content">
                                                         <a href="https://www.printables.com/pl/model/266182-esp32-128x32-oled-and-tp4056-case">
                                                             Przenośne ESP32
+                                                            <i class="fa fa-link"></i>
                                                         </a>
                                                         <p class="heading mt-3 has-text-grey">
                                                             Sierpień 2022
@@ -611,6 +651,7 @@
                                                     <div class="content">
                                                         <a href="https://www.printables.com/pl/model/188731-nodemcu-dht11-128x32-oled-case">
                                                             Prosta stacja pogodowa
+                                                            <i class="fa fa-link"></i>
                                                         </a>
                                                         <p class="heading mt-3 has-text-grey">
                                                             Maj 2022
@@ -664,6 +705,9 @@
                                         </div>
                                     </div>
                                 </div>
+                                <button onclick="showProjects()" id="projektybutton" class="button is-fullwidth mt-3">
+                                    Pokaż więcej&nbsp;<i class="fa fa-arrow-down"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -892,12 +936,12 @@ const age = document.getElementById("age");
 
 function eng() {
     setCookie("lang", "1", 1);
-    document.location.href = 'http://piotrowsky.dev';
+    document.location.href = 'https://piotrowsky.dev';
 }
 
 function pl() {
     setCookie("lang", "1", 1);
-    document.location.href = 'http://piotrowsky.dev/pl';
+    document.location.href = 'https://piotrowsky.dev/pl';
 }
 
 round_to = function(precision, value) {
@@ -930,6 +974,12 @@ function setCookie(name, value, days) {
     document.cookie = name + "=" + (value || "") + expires + "; path=/";
 }
 
+function showProjects() {
+    document.getElementById("projektysmall").style.maxHeight = "100%";
+    document.getElementById("projektysmall").classList.add("removeBar");
+    document.getElementById("projektybutton").remove();
+}
+
 function getCookie(name) {
     var nameEQ = name + "=";
     var ca = document.cookie.split(';');
@@ -943,7 +993,7 @@ function getCookie(name) {
 
 var language = navigator.language || navigator.browserLanguage; //for IE
 
-if (language.indexOf('pl') < -1 && !getCookie("lang")) {
+if (language.indexOf('pl') < -1 && !getCookie("lang") && !document.location.href.includes("127.0.0.1")) {
     document.location.href = 'http://piotrowsky.dev';
 }
 </script>
