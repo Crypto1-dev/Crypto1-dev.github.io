@@ -187,6 +187,37 @@
             transform: rotate(360deg);
         }
     }
+
+    html {
+        --scrollbarBG: #FBF7F4;
+        --thumbBG: #49C78E;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        html {
+            --scrollbarBG: #rgb(23,24,28);
+            --thumbBG: #1DA64C;
+        }
+    }
+
+    *::-webkit-scrollbar {
+        width: 11px;
+    }
+
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+    }
+
+    *::-webkit-scrollbar-track {
+        background: var(--scrollbarBG);
+    }
+
+    *::-webkit-scrollbar-thumb {
+        background-color: var(--thumbBG);
+        border-radius: 6px;
+        border: 3px solid var(--scrollbarBG);
+    }
     </style>
 </head>
 
@@ -286,13 +317,30 @@
                                             <div class="card">
                                                 <div class="card-image">
                                                     <figure class="image">
+                                                        <img src="assets/splitter2.jpg" loading="lazy">
+                                                    </figure>
+                                                </div>
+                                                <div class="card-content has-text-left">
+                                                    <div class="content">
+                                                        <b>4-kanałowy wtórnik audio</b> ze wskaźnikami wysterowania <span class="tag is-warning">W trakcie tworzenia</span>
+                                                        <p class="heading mt-3 has-text-grey">
+                                                            Luty 2023
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class='column is-half'>
+                                            <div class="card">
+                                                <div class="card-image">
+                                                    <figure class="image">
                                                         <img src="assets/iv27.gif" loading="lazy">
                                                     </figure>
                                                 </div>
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
                                                         <a href="https://github.com/revoxhere/IV-27-VFD-Clock">
-                                                            Duży zegar VFD na lampie IV-27
+                                                            Duży zegar VFD na lampie <b>IV-27</b>
                                                         </a>
                                                         <p class="heading mt-3 has-text-grey">
                                                             Luty 2023
@@ -310,7 +358,7 @@
                                                 </div>
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
-                                                        Mini zegar VFD na lampie IV-21 2.0
+                                                        Mini zegar VFD na lampie <b>IV-21</b> <small>wersja 2.0</small>
                                                         <p class="heading mt-3 has-text-grey">
                                                             Luty 2023
                                                         </p>
@@ -328,7 +376,7 @@
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
                                                         <a href="https://www.printables.com/pl/model/384490-retro-iv-6-vfd-clock">
-                                                            Zegar na lampach VFD IV-6
+                                                            Zegar na lampach VFD <b>IV-6</b>
                                                             <i class="fa fa-link"></i>
                                                         </a>
                                                         <p class="heading mt-3 has-text-grey">
@@ -348,7 +396,7 @@
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
                                                         <a href="https://www.printables.com/pl/model/381429-vu-meter-with-led-replicas-of-in-9-nixie-tubes">
-                                                            VU meter na moich "replikach" lamp IN-9
+                                                            VU meter na moich "replikach" lamp <b>IN-9</b>
                                                             <i class="fa fa-link"></i>
                                                         </a>
                                                         <p class="heading mt-3 has-text-grey">
@@ -368,7 +416,7 @@
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
                                                         <a href="https://github.com/revoxhere/Mini-Zegar-VFD">
-                                                            Mini zegar VFD na lampie IV-21
+                                                            Mini zegar VFD na lampie <b>IV-21</b>
                                                             <i class="fa fa-link"></i>
                                                         </a>
                                                         <p class="heading mt-3 has-text-grey">
@@ -387,7 +435,7 @@
                                                 </div>
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
-                                                        Wskaźnik wysterowania na lampie 6E2 "magiczne oko"
+                                                        Wskaźnik wysterowania na lampie <b>6E2</b> "magiczne oko"
                                                         <p class="heading mt-3 has-text-grey">
                                                             Styczeń 2023
                                                         </p>
@@ -404,7 +452,7 @@
                                                 </div>
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
-                                                        Zegar na lampach IN-14
+                                                        Zegar na lampach Nixie <b>IN-14</b>
                                                         <p class="heading mt-3 has-text-grey">
                                                             Grudzień 2022
                                                         </p>
@@ -422,7 +470,7 @@
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
                                                         <a href="assets/przetwornica-555.pdf">
-                                                            Zasilacz impulsowy na NE555
+                                                            Zasilacz impulsowy na układzie <b>NE555</b>
                                                             <i class="fa fa-link"></i>
                                                         </a>
                                                         <p class="heading mt-3 has-text-grey">
@@ -442,7 +490,7 @@
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
                                                         <a href="https://www.printables.com/pl/model/345804-avt5500-battery-capacity-tester-case">
-                                                            Miernik pojemności akumulatorów AVT5500 + moja obudowa
+                                                            Miernik pojemności akumulatorów <b>AVT5500</b> + moja obudowa
                                                             <i class="fa fa-link"></i>
                                                         </a>
                                                         <p class="heading mt-3 has-text-grey">
@@ -461,7 +509,7 @@
                                                 </div>
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
-                                                        Prosty zegar LED-owy
+                                                        Prosty zegar LED
                                                         <p class="heading mt-3 has-text-grey">
                                                             Grudzień 2022
                                                         </p>
@@ -479,7 +527,7 @@
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
                                                         <a href="https://www.printables.com/pl/model/334645-avt2425-capacitance-meter-enclosure">
-                                                            Miernik pojemności kondensatorów AVT2425 + moja obudowa
+                                                            Miernik pojemności kondensatorów <b>AVT2425</b> + moja obudowa
                                                             <i class="fa fa-link"></i>
                                                         </a>
                                                         <p class="heading mt-3 has-text-grey">
@@ -498,7 +546,7 @@
                                                 </div>
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
-                                                        Matryca RGB 20x22 piksele na WS2812B
+                                                        Matryca RGB 20x22px na LEDach <b>WS2812B</b>
                                                         <p class="heading mt-3 has-text-grey">
                                                             Listopad 2022
                                                         </p>
@@ -515,7 +563,7 @@
                                                 </div>
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
-                                                        Zegar na lampach IN-12
+                                                        Zegar na lampach Nixie <b>IN-12</b>
                                                         <p class="heading mt-3 has-text-grey">
                                                             Listopad 2022
                                                         </p>
@@ -532,7 +580,7 @@
                                                 </div>
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
-                                                        Świąteczne drzewko LED-owe
+                                                        Świąteczne drzewko LEDowe
                                                         <p class="heading mt-3 has-text-grey">
                                                             Listopad 2022
                                                         </p>
@@ -566,7 +614,7 @@
                                                 </div>
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
-                                                        Duży LED-owy wyświetlacz 14-segmentowy
+                                                        LEDowy wyświetlacz 14-segmentowy
                                                         <p class="heading mt-3 has-text-grey">
                                                             Październik 2022
                                                         </p>
@@ -600,7 +648,7 @@
                                                 </div>
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
-                                                        Zegar LED AVT3132 + moja obudowa
+                                                        Zegar LED <b>AVT3132</b> + moja obudowa
                                                         <p class="heading mt-3 has-text-grey">
                                                             Październik 2022
                                                         </p>
@@ -617,7 +665,7 @@
                                                 </div>
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
-                                                        Analizator widma AVT2864 + moja obudowa
+                                                        Analizator widma <b>AVT2864</b> + moja obudowa
                                                         <p class="heading mt-3 has-text-grey">
                                                             Wrzesień 2022
                                                         </p>
@@ -671,7 +719,7 @@
                                                 </div>
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
-                                                        Maszynka przerabiająca butelki na filament do drukarki 3D
+                                                        Maszynka przerabiająca <b>butelki na filament</b> do drukarki 3D
                                                         <p class="heading mt-3 has-text-grey">
                                                             Lipiec 2022
                                                         </p>
@@ -688,7 +736,7 @@
                                                 </div>
                                                 <div class="card-content has-text-left">
                                                     <div class="content">
-                                                        LED-owy wskaźnik wysterowania
+                                                        LEDowy wskaźnik wysterowania
                                                         <p class="heading mt-3 has-text-grey">
                                                             Maj 2022
                                                         </p>
