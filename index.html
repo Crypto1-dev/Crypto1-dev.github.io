@@ -187,6 +187,37 @@
             transform: rotate(360deg);
         }
     }
+    
+    html {
+        --scrollbarBG: #FBF7F4;
+        --thumbBG: #49C78E;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        html {
+            --scrollbarBG: #rgb(23, 24, 28);
+            --thumbBG: #1DA64C;
+        }
+    }
+
+    *::-webkit-scrollbar {
+        width: 11px;
+    }
+
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+    }
+
+    *::-webkit-scrollbar-track {
+        background: var(--scrollbarBG);
+    }
+
+    *::-webkit-scrollbar-thumb {
+        background-color: var(--thumbBG);
+        border-radius: 6px;
+        border: 3px solid var(--scrollbarBG);
+    }
     </style>
 </head>
 
@@ -929,6 +960,13 @@
                                         Magi REST/RPC API
                                     </a>
                                     - (first!) <b>Python library</b> and a (public!) Flask app <small class="has-text-grey">2021-2023</small>
+                                </div>
+                                <div class="column is-full">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/PowerShell_5.0_icon.png" class="icon icon-text lightshadow rotate">
+                                    <a class="link" href="https://raw.githubusercontent.com/revoxhere/revoxhere.github.io/main/assets/AutomatyczneKopieZapasowe.ps1">
+                                        Automatic backups
+                                    </a>
+                                    - a simple program for <b>creating backups</b> and <b>auto-deletion of old ones</b> written in PowerShell <span class="tag is-warning">Tyco</span><small class="has-text-grey"> 2023</small>
                                 </div>
                                 <div class="column is-full">
                                     <img src="https://github.com/revoxhere/svkobot/raw/main/svkobot.png" class="icon icon-text lightshadow rotate">
