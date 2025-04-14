@@ -1,1 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TDY Blockchain</title>
+  <style>
+    body {
+      font-family: monospace;
+      background: #0e0e0e;
+      color: #00ffe0;
+      padding: 1.5rem;
+    }
+    h1, h2 {
+      color: #ff44aa;
+    }
+    textarea, input {
+      width: 100%;
+      padding: 0.5rem;
+      background: #111;
+      color: #0ff;
+      border: 1px solid #444;
+      margin-bottom: 1rem;
+    }
+    button {
+      background: #ff44aa;
+      color: white;
+      font-weight: bold;
+      border: none;
+      padding: 0.5rem 1rem;
+      margin-bottom: 1rem;
+      cursor: pointer;
+    }
+    .section {
+      margin-bottom: 2rem;
+    }
+    pre {
+      background: #111;
+      padding: 1rem;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>TDY Coin — Self-Contained Blockchain</h1>
 
+  <div class="section">
+    <button onclick="generateWallet()">🔐 Generate Wallet</button>
+    <p><strong>Public Address:</strong></p>
+    <textarea id="address" readonly></textarea>
+    <p><strong>Private Key (keep safe!):</strong></p>
+    <textarea id="private" readonly></textarea>
+  </div>
+
+  <div class="section">
+    <h2>🪙 Create a Transaction</h2>
+    <input id="to" placeholder="Recipient Address" />
+    <input id="amount" type="number" placeholder="Amount" />
+    <button onclick="createTransaction()">📤 Create TX</button>
+  </div>
+
+  <div class="section">
+    <h2>⛏️ Mine Block</h2>
+    <button onclick="mineBlock()">🛠️ Mine</button>
+    <pre id="mineResult"></pre>
+  </div>
+
+  <div class="section">
+    <h2>📦 Blockchain</h2>
+    <button onclick="viewChain()">📚 View Chain</button>
+    <pre id="chain"></pre>
+  </div>
+
+  <script>
+    // =================== TDY Blockchain Code ===================
+
+    let wallet = { address: '', privateKey: '' };
+    let blockchain = [];
+    let mempool = [];
+
+    function sha256(str) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(str);
+      return crypto.subtle.digest("SHA-256", data).then(buf => {
+        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+      });
+    }
+
+    async function generateWallet() {
+      const key = crypto.getRandomValues(new Uint8Array(32));
+      const privateKey = Array.from(key).map(b => b.toString(16).padStart(2, '0')).join('');
+      const address = await sha256(privateKey);
+      wallet = { address: 'TDY' + address.slice(0, 32), privateKey };
+      document.getElementById('address').value = wallet.address;
+      document.getElementById('private').value = privateKey;
+    }
+
+    function createTransaction() {
+      const to = document.getElementById('to').value;
+      const amount = parseFloat(document.getElementById('amount').value);
+      if (!wallet.address || !wallet.privateKey || !to || !amount || amount <= 0) {
+        alert("Fill all fields correctly!");
+        return;
+      }
+      const tx = {
+        from: wallet.address,
+        to,
+        amount,
+        time: Date.now()
+      };
+      mempool.push(tx);
+      alert("Transaction added to mempool.");
+    }
+
+    async function mineBlock() {
+      const previousHash = blockchain.length ? blockchain[blockchain.length - 1].hash : "0".repeat(64);
+      const transactions = [...mempool];
+      const rewardTx = {
+        from: "COINBASE",
+        to: wallet.address,
+        amount: 10,
+        time: Date.now()
+      };
+      transactions.push(rewardTx);
+      let nonce = 0;
+      let hash = "";
+      let block = {};
+      while (true) {
+        block = {
+          index: blockchain.length,
+          timestamp: Date.now(),
+          transactions,
+          previousHash,
+          nonce
+        };
+        const str = JSON.stringify(block);
+        hash = await sha256(str);
+        if (hash.startsWith("0000")) break;
+        nonce++;
+      }
+      block.hash = hash;
+      blockchain.push(block);
+      mempool = [];
+      document.getElementById("mineResult").innerText = "✅ Block mined: " + hash + "\nIncluded TXs: " + transactions.length;
+    }
+
+    function viewChain() {
+      document.getElementById("chain").innerText = JSON.stringify(blockchain, null, 2);
+    }
+
+    // Auto-generate a wallet on load
+    generateWallet();
+  </script>
+</body>
+</html>
