@@ -1,611 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>TDY Coin – Full Node & Wallet</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Citi Wallet (CI)</title>
   <style>
-    /* ==========================================================================
-       CSS Styles for a professional, dark-themed interface 
-       ========================================================================== */
     body {
-      background: #121212;
-      color: #e0e0e0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: monospace;
+      background: #0e0e0e;
+      color: #00ffcc;
       padding: 20px;
-      margin: 0;
+      line-height: 1.5;
     }
-    h1, h2, h3 {
-      color: #00e5ff;
-    }
-    input, button, textarea {
-      font-size: 1rem;
-      padding: 10px;
-      margin: 5px 0;
-      border: none;
-      border-radius: 5px;
-      width: 100%;
-    }
-    input, textarea {
-      background: #1e1e1e;
-      color: #fff;
-    }
-    button {
-      background: #00e5ff;
-      color: #121212;
-      font-weight: bold;
-      cursor: pointer;
+    input, button {
+      background: #111;
+      border: 1px solid #00ffcc;
+      color: #00ffcc;
+      padding: 8px;
+      margin: 5px;
     }
     button:hover {
-      background: #18ffff;
-    }
-    pre {
-      background: #1e1e1e;
-      padding: 10px;
-      border-radius: 5px;
-      overflow-x: auto;
-      max-height: 300px;
-    }
-    .hidden {
-      display: none;
+      background: #222;
+      cursor: pointer;
     }
     .section {
-      margin-bottom: 40px;
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid #00ffcc;
     }
-    .copy-btn {
-      font-size: 0.9em;
-      background: #333;
-      color: #fff;
-      margin-bottom: 15px;
+    #wallet, #sendDiv, #farmDiv {
+      display: none;
     }
   </style>
 </head>
 <body>
-  <h1>TDY Coin – Full Node & Wallet</h1>
-  <p>This system implements a real coin with fixed supply, proof-of-stake (15% APY), loans (5% APY) and a public, peer-synchronized blockchain.</p>
+  <h1>🪙 Citi Wallet (CI)</h1>
   
-  <!-- ==================================================
-       CLIENT-SIDE UI 
-       ================================================== -->
-  <div id="walletUI">
-    <section id="walletGen">
-      <h2>🔐 Create / Load Wallet</h2>
-      <button id="createWalletBtn">Generate Wallet</button>
-      <h3>Your Address</h3>
-      <input id="address" readonly placeholder="Wallet Address">
-      <button class="copy-btn" onclick="copyToClipboard('address')">Copy Address</button>
-      <h3>Private Key</h3>
-      <input id="privateKey" readonly placeholder="Private Key">
-      <button class="copy-btn" onclick="copyToClipboard('privateKey')">Copy Private Key</button>
-      <h3>Mnemonic Seed</h3>
-      <textarea id="mnemonic" readonly rows="2" placeholder="Mnemonic Seed"></textarea>
-      <button class="copy-btn" onclick="copyToClipboard('mnemonic')">Copy Mnemonic</button>
-    </section>
-
-    <section id="mainUI" class="hidden">
-      <div>
-        <h2>Balance & Stats</h2>
-        <p><strong>Balance:</strong> <span id="balance">0</span> TDY</p>
-        <p><strong>Staked:</strong> <span id="staked">0</span> TDY</p>
-        <p><strong>Loaned:</strong> <span id="loaned">0</span> TDY</p>
-      </div>
-
-      <div>
-        <h2>📤 Send TDY</h2>
-        <input id="toAddress" placeholder="Recipient Address">
-        <input id="amount" type="number" placeholder="Amount">
-        <button id="sendBtn">Send</button>
-      </div>
-
-      <div>
-        <h2>🌱 Stake (15% APY)</h2>
-        <input id="stakeAmount" type="number" placeholder="Amount to Stake">
-        <button id="stakeBtn">Stake</button>
-      </div>
-
-      <div>
-        <h2>💸 Request Loan (5% APY)</h2>
-        <input id="loanAmount" type="number" placeholder="Amount to Loan">
-        <button id="loanBtn">Take Loan</button>
-      </div>
-
-      <div>
-        <h2>📦 Blockchain Ledger</h2>
-        <button id="viewChainBtn">View Ledger</button>
-        <pre id="chainView"></pre>
-      </div>
-    </section>
+  <!-- Login Section -->
+  <div id="loginDiv" class="section">
+    <h3>Login</h3>
+    <input type="text" id="username" placeholder="Username" /><br />
+    <input type="password" id="password" placeholder="Password" /><br />
+    <button onclick="login()">Login</button>
+  </div>
+  
+  <!-- Main Wallet Section -->
+  <div id="wallet" class="section">
+    <h3>Wallet</h3>
+    <p>Address: <span id="address"></span></p>
+    <p>Balance: <span id="balance">0</span> CI</p>
+    <div>
+      <label for="emailInput">Email (for farming):</label>
+      <input type="email" id="emailInput" placeholder="you@example.com" />
+      <button onclick="verifyEmail()">Verify Email</button>
+    </div>
+    <!-- Send Coins Section -->
+    <div id="sendDiv" class="section">
+      <h4>Send CI</h4>
+      <input type="text" id="to" placeholder="Recipient address" /><br />
+      <input type="number" id="amount" placeholder="Amount" /><br />
+      <button onclick="send()">Send</button>
+    </div>
+    <!-- Farming Section -->
+    <div id="farmDiv" class="section">
+      <h4>Farm CI</h4>
+      <button onclick="farm()">Farm 1 CI</button>
+    </div>
   </div>
 
-  <!-- ==================================================
-       SERVER-SIDE CODE (Requires Node.js integration)
-       This file is meant to be run in an environment (e.g. Electron)
-       where Node.js modules are available in the HTML.
-       ================================================== -->
   <script>
-  // If running in a Node-enabled environment:
-  if (typeof require !== "undefined") {
-    // ==========================================================
-    // ============ SERVER SETUP: Express & WebSocket ============
-    // ==========================================================
-    const express = require('express');
-    const bodyParser = require('body-parser');
-    const http = require('http');
-    const WebSocket = require('ws');
-    const fs = require('fs');
-    const path = require('path');
-    const cryptoNode = require('crypto');
-
-    const app = express();
-    app.use(bodyParser.json());
-
-    // Global variables for our blockchain state
-    const TOTAL_SUPPLY = 21000000; // 21 million TDY
-    let currentSupply = 0;
-
-    // ==========================================================
-    // ============ BLOCKCHAIN CLASSES & FUNCTIONS =============
-    // ==========================================================
-
-    // Utility: SHA-256 hash (Node version)
-    function nodeSha256(data) {
-      return cryptoNode.createHash('sha256').update(data).digest('hex');
+    // Utility: SHA-256 hash function using Web Crypto API
+    async function sha256(str) {
+      const buffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buffer))
+          .map(b => b.toString(16).padStart(2, "0"))
+          .join("");
     }
 
-    // Transaction class representing a transfer of TDY
-    class Transaction {
-      constructor(from, to, amount, type = "transfer", extra = {}) {
-        this.from = from;      // sender address (or "COINBASE" for staking rewards)
-        this.to = to;          // recipient address
-        this.amount = amount;  // amount of TDY
-        this.timestamp = Date.now();
-        this.type = type;      // "transfer", "stake", "loan", etc.
-        this.extra = extra;    // additional info (like interest rate)
-        this.signature = "";   // digital signature (to be set after signing)
+    let address = "", key = "", currentUser = "";
+    
+    // Login function: Derive key and wallet address
+    async function login() {
+      currentUser = document.getElementById("username").value.trim();
+      const pass = document.getElementById("password").value;
+      if (!currentUser || !pass) {
+        return alert("Please enter both username and password.");
       }
-      
-      sign(privateKey) {
-        // For demonstration: sign the JSON string of the transaction.
-        const data = JSON.stringify(this) + privateKey;
-        this.signature = nodeSha256(data);
-      }
-      
-      isValid() {
-        // In a real implementation, verify the signature using public key cryptography.
-        return Boolean(this.signature);
-      }
-    }
-
-    // Block class representing a block in the blockchain
-    class Block {
-      constructor(index, previousHash, transactions, validator) {
-        this.index = index;
-        this.timestamp = Date.now();
-        this.transactions = transactions; // array of Transaction
-        this.previousHash = previousHash;
-        this.nonce = 0; // Not used in PoS but kept for structure
-        this.validator = validator; // The address that validated (staked)
-        this.hash = this.computeHash();
-      }
-      
-      computeHash() {
-        const blockData = this.index + this.timestamp + JSON.stringify(this.transactions) +
-                          this.previousHash + this.nonce + this.validator;
-        return nodeSha256(blockData);
-      }
-      
-      validateBlock() {
-        // For PoS, additional checks can be added here.
-        return (this.hash === this.computeHash());
-      }
-    }
-
-    // Blockchain class that keeps track of blocks and manages consensus
-    class Blockchain {
-      constructor() {
-        this.chain = [];
-        this.pendingTransactions = [];
-        this.createGenesisBlock();
-      }
-      
-      createGenesisBlock() {
-        const genesisBlock = new Block(0, "0", [], "GENESIS");
-        this.chain.push(genesisBlock);
-      }
-      
-      getLatestBlock() {
-        return this.chain[this.chain.length - 1];
-      }
-      
-      addBlock(newBlock) {
-        // In a real implementation, validate PoS conditions here.
-        newBlock.previousHash = this.getLatestBlock().hash;
-        newBlock.hash = newBlock.computeHash();
-        this.chain.push(newBlock);
-      }
-      
-      addTransaction(transaction) {
-        if (transaction instanceof Transaction && transaction.isValid()) {
-          this.pendingTransactions.push(transaction);
-        }
-      }
-      
-      processPendingTransactions(validatorAddress, reward=25) {
-        // For PoS, assume the validator is selected based on stake.
-        // Create a reward transaction from "COINBASE"
-        const rewardTx = new Transaction("COINBASE", validatorAddress, reward, "reward");
-        rewardTx.sign("COINBASE_SECRET");  // In production, use proper keys.
-        this.pendingTransactions.push(rewardTx);
-        const block = new Block(
-          this.chain.length,
-          this.getLatestBlock().hash,
-          this.pendingTransactions,
-          validatorAddress
-        );
-        this.addBlock(block);
-        this.pendingTransactions = [];
-        return block;
-      }
-      
-      isChainValid() {
-        for (let i = 1; i < this.chain.length; i++) {
-          const current = this.chain[i];
-          const previous = this.chain[i - 1];
-          if (current.hash !== current.computeHash() || current.previousHash !== previous.hash) {
-            return false;
-          }
-        }
-        return true;
-      }
+      // Derive a deterministic key from username and password
+      key = await sha256(currentUser + ":" + pass);
+      // Generate wallet address (hash of key with a prefix)
+      address = await sha256("ADDR:" + key);
+      document.getElementById("address").innerText = address.slice(0,16) + "...";
+      // Hide login, show wallet and additional panels
+      document.getElementById("loginDiv").style.display = "none";
+      document.getElementById("wallet").style.display = "block";
+      document.getElementById("sendDiv").style.display = "block";
+      document.getElementById("farmDiv").style.display = "block";
+      getBalance();
     }
     
-    // Create our main blockchain instance
-    const tdyChain = new Blockchain();
-    
-    // ==========================================================
-    // ============ WALLET CLASS & FUNCTIONS ====================
-    // ==========================================================
-    class Wallet {
-      constructor() {
-        this.mnemonic = Wallet.generateMnemonic();
-        this.privateKey = nodeSha256(this.mnemonic);
-        this.address = this.privateKey.slice(0, 16);
-        this.balance = 1000;  // Starting balance allocated on wallet creation
-        this.staked = 0;
-        this.loan = 0;
-      }
-      
-      static generateMnemonic() {
-        // A proper mnemonic should use a larger word list, etc.
-        const words = ["apple","banana","cat","dog","egg","fish","goat","hat","ice","juice","kite","lamp","moon","cow","star","sun","sky","cloud","tree","rock"];
-        let mnemonic = [];
-        for (let i = 0; i < 12; i++) {
-          mnemonic.push(words[Math.floor(Math.random() * words.length)]);
-        }
-        return mnemonic.join(" ");
-      }
-    }
-    
-    // ==========================================================
-    // ============ EXPRESS API ENDPOINTS =======================
-    // ==========================================================
-    // Create a simple in-memory wallet store
-    let wallets = {};
-    
-    // Endpoint: Create Wallet
-    app.post('/api/createWallet', (req, res) => {
-      const walletInstance = new Wallet();
-      wallets[walletInstance.address] = walletInstance;
-      currentSupply += walletInstance.balance;
-      res.json({
-        mnemonic: walletInstance.mnemonic,
-        privateKey: walletInstance.privateKey,
-        address: walletInstance.address,
-        balance: walletInstance.balance
-      });
-    });
-    
-    // Endpoint: Get Balance for an Address
-    app.get('/api/balance/:address', (req, res) => {
-      const addr = req.params.address;
-      if (wallets[addr]) {
-        res.json({ balance: wallets[addr].balance, staked: wallets[addr].staked, loan: wallets[addr].loan });
-      } else {
-        res.status(404).json({ error: "Wallet not found" });
-      }
-    });
-    
-    // Endpoint: Send Transaction
-    app.post('/api/send', (req, res) => {
-      const { from, to, amount, privateKey } = req.body;
-      if (!wallets[from] || wallets[from].privateKey !== privateKey) {
-        return res.status(403).json({ error: "Invalid wallet or private key" });
-      }
-      if (wallets[from].balance < amount) {
-        return res.status(400).json({ error: "Insufficient balance" });
-      }
-      // Deduct amount and credit recipient (create recipient wallet if needed)
-      wallets[from].balance -= amount;
-      if (!wallets[to]) {
-        // Create a dummy wallet for recipient with zero balance
-        wallets[to] = new Wallet();
-        wallets[to].balance = 0;
-      }
-      wallets[to].balance += amount;
-      
-      // Create transaction and add to blockchain
-      const tx = new Transaction(from, to, amount);
-      tx.sign(privateKey);
-      tdyChain.addTransaction(tx);
-      
-      res.json({ status: "success", tx });
-    });
-    
-    // Endpoint: Stake coins (15% APY rewarded immediately for demo purposes)
-    app.post('/api/stake', (req, res) => {
-      const { address, amount, privateKey } = req.body;
-      if (!wallets[address] || wallets[address].privateKey !== privateKey) {
-        return res.status(403).json({ error: "Invalid wallet or private key" });
-      }
-      if (wallets[address].balance < amount) {
-        return res.status(400).json({ error: "Insufficient balance" });
-      }
-      wallets[address].balance -= amount;
-      wallets[address].staked += amount;
-      // Calculate reward (for 1 year, for simplicity added immediately)
-      const reward = amount * 0.15;
-      wallets[address].balance += reward;
-      
-      // Create staking transaction
-      const tx = new Transaction(address, address, amount, "stake", { reward });
-      tx.sign(privateKey);
-      tdyChain.addTransaction(tx);
-      
-      res.json({ status: "success", staked: wallets[address].staked, reward });
-    });
-    
-    // Endpoint: Request Loan (5% APY interest charged immediately)
-    app.post('/api/loan', (req, res) => {
-      const { address, amount } = req.body;
-      if (amount <= 0 || amount > 1000) {
-        return res.status(400).json({ error: "Loan amount invalid" });
-      }
-      if (!wallets[address]) {
-        return res.status(404).json({ error: "Wallet not found" });
-      }
-      // Loan processing: add amount then subtract interest
-      const interest = amount * 0.05;
-      wallets[address].balance += amount - interest;
-      wallets[address].loan += amount;
-      
-      const tx = new Transaction("BANK", address, amount, "loan", { interest });
-      // BANK transaction is auto-signed.
-      tx.sign("BANK_SECRET");
-      tdyChain.addTransaction(tx);
-      
-      res.json({ status: "success", loan: wallets[address].loan });
-    });
-    
-    // Endpoint: Get full blockchain
-    app.get('/api/chain', (req, res) => {
-      res.json(tdyChain);
-    });
-    
-    // ==========================================================
-    // ============ PEER-TO-PEER SYNC (WebSocket) =================
-    // ==========================================================
-    const serverPort = 3000;
-    const serverInstance = http.createServer(app);
-    const wss = new WebSocket.Server({ server: serverInstance });
-    
-    // Broadcast a message to all connected peers
-    function broadcast(message) {
-      wss.clients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify(message));
-        }
-      });
-    }
-    
-    // When a new peer connects, send them the full chain
-    wss.on('connection', (ws) => {
-      ws.send(JSON.stringify({ type: 'CHAIN_UPDATE', chain: tdyChain }));
-      ws.on('message', (msg) => {
-        // Process incoming peer messages (e.g., new transactions, chain updates)
-        const data = JSON.parse(msg);
-        if (data.type === 'NEW_TRANSACTION') {
-          tdyChain.addTransaction(data.transaction);
-          broadcast({ type: 'NEW_TRANSACTION', transaction: data.transaction });
-        }
-      });
-    });
-    
-    serverInstance.listen(serverPort, () => {
-      console.log(`Server running on port ${serverPort}`);
-    });
-    
-    // ==========================================================
-    // ============ EXTENSIVE UTILITY FUNCTIONS (DUMMY EXTENSION)
-    // The following section extends the codebase to simulate over 1000 lines.
-    // In production, these functions would handle error logging, persistence,
-    // encryption of wallet data, chain conflict resolution, smart contract hooks,
-    // transaction fee calculations, and more.
-    // ==========================================================
-    // --- BEGIN EXTENSIVE IMPLEMENTATION ---
-    // (Below are placeholder implementations and repetitive comments to represent
-    //  detailed logic, error handling, and advanced consensus mechanisms.)
-    
-    // Utility: Persist blockchain to file (for durability)
-    function persistChain() {
-      fs.writeFileSync(path.join(__dirname, 'tdy_chain.json'), JSON.stringify(tdyChain, null, 2));
-    }
-    
-    // Utility: Load blockchain from file (if exists)
-    function loadChain() {
+    // Get user balance from the global storage (Sheet.best API)
+    async function getBalance() {
       try {
-        const data = fs.readFileSync(path.join(__dirname, 'tdy_chain.json'), 'utf8');
-        // In a full implementation, you would reinstantiate class instances.
-        return JSON.parse(data);
+        const res = await fetch("https://sheet.best/api/sheets/b4c6a8da-8b08-43e6-b6b3-testonly");
+        const data = await res.json();
+        const acct = data.find(a => a.address === address);
+        document.getElementById("balance").innerText = acct ? acct.balance : "0";
       } catch (e) {
-        return null;
+        console.error("Error fetching balance:", e);
       }
     }
     
-    // Function to validate the entire chain and resolve conflicts with peers (simplified)
-    function resolveChainConflicts() {
-      // Placeholder for conflict resolution algorithm.
-      // In production, compare lengths and validities with connected peers.
-      console.log("Resolving chain conflicts among peers...");
-    }
-    
-    // Function to simulate regular chain persistence every minute.
-    setInterval(() => {
-      persistChain();
-      resolveChainConflicts();
-      console.log("Chain persisted and conflicts resolved.");
-    }, 60000);
-    
-    // Extensive logging and debugging routines
-    for (let i = 0; i < 150; i++) {
-      console.log("Extended debug log line", i);
-    }
-    
-    // Additional utility: Encrypt wallet private key with a passphrase
-    function encryptPrivateKey(privateKey, passphrase) {
-      // Placeholder encryption using AES (this is a demo; use proper libraries in production)
-      const cipher = cryptoNode.createCipher('aes-256-cbc', passphrase);
-      let encrypted = cipher.update(privateKey, 'utf8', 'hex');
-      encrypted += cipher.final('hex');
-      return encrypted;
-    }
-    
-    // Additional utility: Decrypt wallet private key with a passphrase
-    function decryptPrivateKey(encryptedKey, passphrase) {
-      const decipher = cryptoNode.createDecipher('aes-256-cbc', passphrase);
-      let decrypted = decipher.update(encryptedKey, 'hex', 'utf8');
-      decrypted += decipher.final('utf8');
-      return decrypted;
-    }
-    
-    // Simulate additional code and comments to push total lines over 1000...
-    // (Imagine hundreds more lines of detailed implementation here.)
-    // --- END EXTENSIVE IMPLEMENTATION ---
-    
-    console.log("TDY Full Node & Wallet is up and running.");
-
-    // ==========================================================
-    // ============ CLIENT-SIDE FUNCTIONS (Fetch API Calls) =======
-    // ==========================================================
-    // These functions are invoked by the UI to communicate with our local server.
-    
-    async function createWallet() {
-      const response = await fetch("http://localhost:" + serverPort + "/api/createWallet", { method: "POST", headers: { "Content-Type": "application/json" } });
-      const walletData = await response.json();
-      // Update UI with wallet data
-      document.getElementById("address").value = walletData.address;
-      document.getElementById("privateKey").value = walletData.privateKey;
-      document.getElementById("mnemonic").value = walletData.mnemonic;
-      document.getElementById("balance").textContent = walletData.balance;
-      document.getElementById("walletGen").classList.add("hidden");
-      document.getElementById("mainUI").classList.remove("hidden");
-    }
-    
-    async function sendTransaction() {
-      const to = document.getElementById("toAddress").value;
+    // Send CI: Create a signed transaction and post it
+    async function send() {
+      const to = document.getElementById("to").value.trim();
       const amount = parseInt(document.getElementById("amount").value);
-      const from = document.getElementById("address").value;
-      const privateKey = document.getElementById("privateKey").value;
-      const response = await fetch("http://localhost:" + serverPort + "/api/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ from, to, amount, privateKey })
-      });
-      const result = await response.json();
-      if (result.status === "success") {
-        // Refresh balance
-        updateBalance(from);
-        alert(`✅ Sent ${amount} TDY to ${to}`);
-      } else {
-        alert(`❌ ${result.error}`);
+      if (!to || isNaN(amount) || amount <= 0) {
+        return alert("Please enter a valid recipient and amount.");
+      }
+      // Sign the transaction: using address, recipient, amount and user's key
+      const sig = await sha256(address + to + amount + key);
+      try {
+        const res = await fetch("https://sheet.best/api/sheets/b4c6a8da-8b08-43e6-b6b3-testonly", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            from: address,
+            to: to,
+            amount: amount,
+            sig: sig,
+            type: "send",
+            timestamp: Date.now()
+          })
+        });
+        if (res.ok) alert("Transaction submitted!");
+        else alert("Transaction failed!");
+      } catch (e) {
+        console.error("Send error:", e);
+        alert("Send error, check console.");
       }
     }
     
-    async function stakeCoins() {
-      const amount = parseInt(document.getElementById("stakeAmount").value);
-      const address = document.getElementById("address").value;
-      const privateKey = document.getElementById("privateKey").value;
-      const response = await fetch("http://localhost:" + serverPort + "/api/stake", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address, amount, privateKey })
-      });
-      const result = await response.json();
-      if (result.status === "success") {
-        updateBalance(address);
-        alert(`🌱 Staked ${amount} TDY; Reward: ${result.reward}`);
-      } else {
-        alert(`❌ ${result.error}`);
+    // Farm CI: User earns 1 CI per click (requires email verification)
+    async function farm() {
+      const now = Date.now();
+      const sig = await sha256(address + now + key);
+      try {
+        const res = await fetch("https://sheet.best/api/sheets/b4c6a8da-8b08-43e6-b6b3-testonly", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            address: address,
+            amount: 1,
+            sig: sig,
+            timestamp: now,
+            type: "farm"
+          })
+        });
+        if (res.ok) alert("Farming submitted! (1 CI earned)");
+        else alert("Farming submission failed!");
+      } catch (e) {
+        console.error("Farm error:", e);
+        alert("Farm error, check console.");
       }
     }
     
-    async function requestLoan() {
-      const amount = parseInt(document.getElementById("loanAmount").value);
-      const address = document.getElementById("address").value;
-      const response = await fetch("http://localhost:" + serverPort + "/api/loan", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address, amount })
-      });
-      const result = await response.json();
-      if (result.status === "success") {
-        updateBalance(address);
-        alert(`💸 Loan granted: ${amount} TDY`);
-      } else {
-        alert(`❌ ${result.error}`);
+    // Email Verification: Used solely for farming rights
+    async function verifyEmail() {
+      const email = document.getElementById("emailInput").value.trim();
+      if (!email || !email.includes("@")) {
+        return alert("Please enter a valid email address.");
+      }
+      const sig = await sha256(address + email + key);
+      try {
+        const res = await fetch("https://sheet.best/api/sheets/b4c6a8da-8b08-43e6-b6b3-testonly", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            address: address,
+            email: email,
+            sig: sig,
+            type: "verify",
+            timestamp: Date.now()
+          })
+        });
+        if (res.ok) alert("Email verification submitted!");
+        else alert("Email verification failed!");
+      } catch (e) {
+        console.error("Email verification error:", e);
+        alert("Error submitting email verification.");
       }
     }
-    
-    async function updateBalance(address) {
-      const response = await fetch("http://localhost:" + serverPort + "/api/balance/" + address);
-      const data = await response.json();
-      document.getElementById("balance").textContent = data.balance;
-      document.getElementById("staked").textContent = data.staked;
-      document.getElementById("loaned").textContent = data.loan;
-    }
-    
-    async function viewLedger() {
-      const response = await fetch("http://localhost:" + serverPort + "/api/chain");
-      const chainData = await response.json();
-      document.getElementById("chainView").textContent = JSON.stringify(chainData, null, 2);
-    }
-    
-    // ==========================================================
-    // ============ UI EVENT LISTENERS ============================
-    // ==========================================================
-    document.getElementById("createWalletBtn").addEventListener("click", createWallet);
-    document.getElementById("sendBtn").addEventListener("click", sendTransaction);
-    document.getElementById("stakeBtn").addEventListener("click", stakeCoins);
-    document.getElementById("loanBtn").addEventListener("click", requestLoan);
-    document.getElementById("viewChainBtn").addEventListener("click", viewLedger);
-    
-    // Helper: Copy text to clipboard
-    function copyToClipboard(elementId) {
-      const elem = document.getElementById(elementId);
-      elem.select();
-      elem.setSelectionRange(0, 99999);
-      document.execCommand("copy");
-      alert("📋 Copied " + elementId + " to clipboard!");
-    }
-    
-    // ==========================================================
-    // ============ END OF CLIENT-SIDE CODE =======================
-    // ==========================================================
-    
-  } // End of if (typeof require !== "undefined")
-  
-  // If not in Node environment, show a warning.
-  else {
-    document.body.innerHTML = "<h1>Error:</h1><p>This application must be run in a Node-enabled environment (e.g., Electron).</p>";
-  }
   </script>
 </body>
 </html>
