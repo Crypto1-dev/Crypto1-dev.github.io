@@ -1,1 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZoneXIT (ZXT) Wallet</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Firebase SDK for auth and global data -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js"></script>
+    <!-- Dependencies for wallet functionality -->
+    <script src="https://unpkg.com/bitcoinjs-lib@5.2.0/dist/bitcoinjs-lib.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>ZoneXIT (ZXT) Wallet</h1>
 
+        <!-- Authentication Section -->
+        <div id="auth-section">
+            <h2>Login / Signup</h2>
+            <input type="text" id="username" placeholder="Username (e.g., root)">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="signup()">Sign Up</button>
+            <button onclick="login()">Login</button>
+            <p id="auth-message"></p>
+            <p id="verification-message" style="display: none;">Check your email for verification.</p>
+        </div>
+
+        <!-- Wallet Section -->
+        <div id="wallet-section" style="display: none;">
+            <h2>Welcome, <span id="current-user"></span></h2>
+            <p>Balance: <span id="balance">0 ZXT</span></p>
+            <p>Your Address: <span id="address"></span></p>
+            <button onclick="logout()">Logout</button>
+            <button onclick="reportBug()">Report a Bug</button>
+
+            <!-- Send Section -->
+            <div id="send-section">
+                <h3>Send ZXT</h3>
+                <input type="text" id="send-username" placeholder="Recipient Username">
+                <input type="number" id="send-amount" placeholder="Amount (ZXT)" min="0" step="0.00000001">
+                <input type="text" id="send-memo" placeholder="Memo (optional)">
+                <button onclick="sendZXT()" id="send-button">Send</button>
+                <p id="send-message"></p>
+            </div>
+
+            <!-- Transaction History -->
+            <h3>Transaction History</h3>
+            <ul id="tx-history"></ul>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
