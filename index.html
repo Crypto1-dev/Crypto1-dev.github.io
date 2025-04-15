@@ -1,142 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>TDY Coin – Web Wallet + Full Node</title>
+  <meta charset="UTF-8" />
+  <title>TDY Coin – Web Wallet + PoS Node</title>
   <style>
-    body { font-family: monospace; background: #111; color: #0ff; padding: 2rem; }
-    h1, h2 { color: #f0f; }
-    input, textarea { width: 100%; background: #000; color: #0f0; padding: 0.5rem; margin-bottom: 1rem; border: 1px solid #444; }
-    button { background: #f0f; color: white; padding: 0.5rem 1rem; border: none; font-weight: bold; cursor: pointer; margin-bottom: 1rem; }
-    pre { background: #000; padding: 1rem; overflow-x: auto; color: #0f0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+    h1, h2 {
+      color: #00bfa5;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0 15px 0;
+      border: none;
+      border-radius: 5px;
+    }
+    input, textarea {
+      background-color: #1e1e1e;
+      color: #e0e0e0;
+    }
+    button {
+      background-color: #00bfa5;
+      color: #121212;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1de9b6;
+    }
+    .section {
+      margin-bottom: 40px;
+    }
+    .disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
-  <h1>🌐 TDY Coin – Decentralized You</h1>
+  <h1>TDY Coin – Web Wallet + PoS Node</h1>
 
-  <div>
-    <button onclick="generateWallet()">🔐 Generate Wallet</button>
-    <p>Address:</p>
-    <textarea id="address" readonly></textarea>
-    <p>Private Key:</p>
-    <textarea id="private" readonly></textarea>
+  <div class="section" id="wallet-section">
+    <h2>🔐 Wallet</h2>
+    <button id="generate-wallet">Generate Wallet</button>
+    <p><strong>Address:</strong></p>
+    <input type="text" id="wallet-address" readonly />
+    <p><strong>Private Key:</strong></p>
+    <input type="text" id="wallet-private" readonly />
+    <p><strong>Mnemonic Seed:</strong></p>
+    <input type="text" id="wallet-seed" readonly />
+    <p><strong>Balance:</strong> <span id="wallet-balance">0</span> TDY</p>
   </div>
 
-  <div>
-    <h2>💸 Send TDY</h2>
-    <input id="to" placeholder="To Address">
-    <input id="amount" type="number" placeholder="Amount">
-    <button onclick="send()">📤 Send</button>
+  <div class="section" id="send-section">
+    <h2>📤 Send TDY</h2>
+    <input type="text" id="send-to" placeholder="Recipient Address" />
+    <input type="number" id="send-amount" placeholder="Amount" />
+    <button id="send-button">Send</button>
   </div>
 
-  <div>
-    <h2>⛏️ Mine Block</h2>
-    <button onclick="mine()">⛏️ Start Mining</button>
-    <pre id="mineStatus">⛏️ Waiting to mine...</pre>
+  <div class="section" id="stake-section">
+    <h2>🌱 Stake TDY</h2>
+    <input type="number" id="stake-amount" placeholder="Amount to Stake" />
+    <button id="stake-button">Stake</button>
+    <p><strong>Staked Amount:</strong> <span id="staked-amount">0</span> TDY</p>
   </div>
 
-  <div>
+  <div class="section" id="blockchain-section">
     <h2>📦 Blockchain</h2>
-    <button onclick="showChain()">📚 Show Chain</button>
-    <pre id="chainData"></pre>
+    <button id="view-chain">View Blockchain</button>
+    <pre id="chain-data"></pre>
   </div>
 
-<script>
-  let blockchain = JSON.parse(localStorage.getItem("tdy_chain") || "[]");
-  let mempool = JSON.parse(localStorage.getItem("tdy_mempool") || "[]");
-  let wallet = JSON.parse(localStorage.getItem("tdy_wallet") || "null") || {};
-
-  function save() {
-    localStorage.setItem("tdy_chain", JSON.stringify(blockchain));
-    localStorage.setItem("tdy_mempool", JSON.stringify(mempool));
-    localStorage.setItem("tdy_wallet", JSON.stringify(wallet));
-  }
-
-  async function hash(data) {
-    let msg = new TextEncoder().encode(data);
-    let buf = await crypto.subtle.digest("SHA-256", msg);
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-  }
-
-  async function generateWallet() {
-    let key = crypto.getRandomValues(new Uint8Array(32));
-    let priv = Array.from(key).map(b => b.toString(16).padStart(2, '0')).join('');
-    let pub = await hash(priv);
-    wallet = { private: priv, address: "TDY" + pub.slice(0, 32) };
-    document.getElementById("address").value = wallet.address;
-    document.getElementById("private").value = priv;
-    save();
-  }
-
-  function send() {
-    let to = document.getElementById("to").value;
-    let amount = parseFloat(document.getElementById("amount").value);
-    if (!to || !amount || !wallet.address) return alert("Missing info!");
-    mempool.push({
-      from: wallet.address,
-      to,
-      amount,
-      time: Date.now()
-    });
-    alert("✅ TX added to mempool");
-    save();
-  }
-
-  function getBalance(addr) {
-    let balance = 0;
-    for (let block of blockchain) {
-      for (let tx of block.transactions) {
-        if (tx.to === addr) balance += tx.amount;
-        if (tx.from === addr) balance -= tx.amount;
-      }
+  <script>
+    // Check for online status
+    if (!navigator.onLine) {
+      alert('You are offline. Please connect to the internet to use the TDY wallet.');
+      document.body.classList.add('disabled');
     }
-    return balance;
-  }
 
-  async function mine() {
-    document.getElementById("mineStatus").textContent = "⏳ Mining...";
-    let rewardTx = {
-      from: "COINBASE",
-      to: wallet.address,
-      amount: 25,
-      time: Date.now()
-    };
-    let txs = [...mempool, rewardTx];
-    let prev = blockchain.length ? blockchain[blockchain.length - 1].hash : "0".repeat(64);
-    let nonce = 0;
-    let hashVal = "";
-    while (true) {
-      let block = {
-        index: blockchain.length,
-        timestamp: Date.now(),
-        transactions: txs,
-        previousHash: prev,
-        nonce
-      };
-      let str = JSON.stringify(block);
-      hashVal = await hash(str);
-      if (hashVal.startsWith("0000")) {
-        block.hash = hashVal;
-        blockchain.push(block);
-        mempool = [];
-        save();
-        document.getElementById("mineStatus").textContent = "✅ Block mined: " + hashVal;
-        return;
-      }
-      nonce++;
-      if (nonce % 1000 === 0) document.getElementById("mineStatus").textContent = "⏳ Trying nonce " + nonce;
+    // Utility functions
+    async function sha256(message) {
+      const msgBuffer = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
-  }
 
-  function showChain() {
-    document.getElementById("chainData").textContent = JSON.stringify(blockchain, null, 2);
-  }
+    function generateMnemonic() {
+      const words = ['apple', 'banana', 'cherry', 'date', 'elderberry', 'fig', 'grape',
+        'honeydew', 'kiwi', 'lemon', 'mango', 'nectarine', 'orange', 'papaya',
+        'quince', 'raspberry', 'strawberry', 'tangerine', 'ugli', 'vanilla',
+        'watermelon', 'xigua', 'yellowfruit', 'zucchini'];
+      let mnemonic = [];
+      for (let i = 0; i < 12; i++) {
+        mnemonic.push(words[Math.floor(Math.random() * words.length)]);
+      }
 
-  // Load wallet on page load
-  if (wallet.address) {
-    document.getElementById("address").value = wallet.address;
-    document.getElementById("private").value = wallet.private;
-  }
-</script>
-</body>
-</html>
+::contentReference[oaicite:29]{index=29}
+ 
