@@ -1,3 +1,1 @@
-# [piotrowsky.dev](https://piotrowsky.dev)
-
-![](https://i.imgur.com/PtxYX48.png)
+working on a coin called pico-coin.
